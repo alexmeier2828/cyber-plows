@@ -3,14 +3,18 @@
 """
 import tkinter as tk
 from views.mapView import MapView
+from state import *
 
 #main function
 
 
 def main():
     top = tk.Tk()
-    mapView = MapView(top)
-    mapView.draw()
+
+
+    gameState = GameState(None) #TODO pass in an actual map PNG
+    mapView = MapView(top, gameState)
+    mapView.draw(gameState)
 
 
 
