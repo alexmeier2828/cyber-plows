@@ -3,6 +3,7 @@
     representation of the map
 """
 import tkinter as tk
+from state import *
 
 class MapView:
     def __init__(self, parent, gameState):
@@ -10,20 +11,20 @@ class MapView:
         self.width = 1028
         self.grid_height = gameState.mapData.height
         self.grid_width = gameState.mapData.width
+        print(str(self.grid_height) + "  " + str( self.grid_width))
         self.mapCanvas = tk.Canvas(parent, bg="black" ,height=self.height, width=self.width)
-        self.road_sprite = tk.PhotoImage(file=r'./sprites/road.gif')
+        self.road_sprite = tk.PhotoImage(file=r'./data/sprites/road.gif')
 
     def draw(self, gameState):
 
         for x in range(0, self.grid_height):
             for y in range(0, self.grid_width):
                 #road layer
-                if gameState.mapData.road[x][y]:
+                if gameState.mapData.mapArray[x][y] is TileTypes.ROAD:
                     self.mapCanvas.create_image(x*32, y*32, image=self.road_sprite, anchor=tk.NE)
 
                 #snow layer
-                if gameState.mapData.snow[x][y]:
-                    print("snow") #TODO find a sprite for snow
+
                 #plow layer
 
                 print(x)
