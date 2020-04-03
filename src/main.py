@@ -12,7 +12,7 @@ def main():
     top = tk.Tk()
 
 
-    gameState = GameState("./data/maps/map_1.png") #TODO pass in an actual map PNG
+    gameState = GameState("../data/maps/map_1.png") #TODO pass in an actual map PNG
     mapView = MapView(top, gameState)
     mapView.draw(gameState)
 
