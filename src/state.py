@@ -20,8 +20,8 @@ class MapData:
         self.imageFileName = imageFileName
         self.mapArray = self._parseImageToArray()
 
-        self.width = len(self.mapArray[0])
-        self.height = len(self.mapArray)
+        self.width = len(self.mapArray)
+        self.height = len(self.mapArray[0])
 
     def _parseImageToArray(self):
         png = Image.open(self.imageFileName)
@@ -44,10 +44,13 @@ class MapData:
                 r,g,b = pixels.getpixel((x,y))
                 if r == 0 and g == 0 and b == 0:
                     mapList[x][y] = TileTypes.ROAD
+                if r != 0 and g != 0 and b == 0:
+                    mapList[x][y] = TileTypes.HOME
 
 
         return mapList
 class TileTypes(Enum):
     WALL = 0
-    ROAD = 1
-    SNOW = 2
+    ROAD = 2
+    SNOW = 1
+    HOME = 3
