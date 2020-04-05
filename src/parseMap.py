@@ -1,4 +1,5 @@
 from enum import Enum
+import numpy as np
 from PIL import Image
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ def isValidState(state, prevState):
 
   # TODO: python define func in func to simplify these if statements, keep short circuiting
   w, h = img.size
-  inBounds = True if stateXY[0] >= 0 and stateXY[0] <= w-1 and stateXY[1] >= 0 and stateXY[1] < h-1 else False
+  inBounds = True if stateXY[0] >= 0 and stateXY[0] < w and stateXY[1] >= 0 and stateXY[1] < h else False
 
   #if inBounds, is a road, and isn't the state we just came from (prevents backstepping)
   return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) and stateXY != prevState[1:] else False
@@ -29,17 +30,22 @@ def findMapStart(map, startColor, startFlag):
 
   return None
 
-# TODO: Add InverseActionEnum
+visitedStates = set()
+
 class ActionEnum(Enum):
   NORTH = 0
   SOUTH = 1
   EAST = 2
   WEST = 3
 
+inverse_action = np.array((1, 0, 3, 2), dtype=int)
+
 #PIL holds (0,0) @ top left corner so N and S modifiers are flipped
 state_modifier = [(0, -1), (0, 1), (1, 0), (-1, 0)]
 
 #####    PROGRAM START    #####
+total_distance = 0
+
 img = Image.open('data/maps/map_1.png').convert('RGB')
 MapGraph = nx.Graph()
 
@@ -55,7 +61,7 @@ if start_state == None:
 stack = [start_state]
 
 debug = True
-limit = 6
+limit = 50
 while(stack != [] and limit > 0):
   # Take current state off the stack
   state = stack.pop()
@@ -65,10 +71,16 @@ while(stack != [] and limit > 0):
   if(isStart):
     prevState = state
     root_path = state
+    #visitedStates.add(root_path)
     counter = 1
   # --- Determine Path Branching ---
   # If new vector path (changed action/direction)
   elif isNewPath(state[0], root_path[0]):
+    # Add to Graph
+    #if state[1:] not in visitedStates:
+    MapGraph.add_edge(root_path[1:], state[1:])
+    visitedStates.add(root_path[1:])
+
     # Reset path tracking
     root_path = state
     counter = 1
@@ -79,13 +91,13 @@ while(stack != [] and limit > 0):
   # --- Determine Valid Next Actions ---
   # if the previous action is still valid append it first
   nextState = calcAction(state, state[0])
-  if not isStart and isValidState(nextState, prevState):
+  if not isStart and isValidState(nextState, prevState) and state[1:] not in visitedStates:
     stack.append(nextState)
   # find all other valid actions and append them to the stack
   for action in ActionEnum:
     if action.value != state[0]:
       nextState = calcAction(state, action.value)
-      if isValidState(nextState, prevState):
+      if isValidState(nextState, prevState) and state[1:] not in visitedStates:
         stack.append(nextState)
 
   # --- Do Printing ---
@@ -97,6 +109,16 @@ while(stack != [] and limit > 0):
 
   # Prepare state information for next iteration
   prevState = state
+  total_distance += 1
   limit -= 1
 
 #end while loop
+
+if debug:
+  print(visitedStates)
+
+print(total_distance)
+
+# Draw Graph
+nx.draw(MapGraph, with_labels=True, font_weight='bold')
+plt.show()
