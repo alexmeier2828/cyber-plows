@@ -1,25 +1,35 @@
 from enum import Enum
 from PIL import Image
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def calcAction(state, stateNum):
   return (stateNum, state[1] + state_modifier[stateNum][0], state[2] + state_modifier[stateNum][1])
 
 def isValidState(state, prevState):
-  state = state[1:]
-  if img.getpixel(state) == (0, 0, 0) and state != prevState[1:]:
-    return True
-  else:
-    return False
+  stateXY = state[1:]
 
+  # TODO: python define func in func to simplify these if statements, keep short circuiting
+  w, h = img.size
+  inBounds = True if stateXY[0] >= 0 and stateXY[0] <= w-1 and stateXY[1] >= 0 and stateXY[1] < h-1 else False
+  print(stateXY, inBounds)
 
-img = Image.open('data/maps/map_1.png').convert('RGB')
+  #if inBounds, is a road, and isn't the state we just came from (prevents backstepping)
+  return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) and stateXY != prevState[1:] else False
 
-# Find starting position
-w, h = img.size
-for x in range(w-1, -1, -1):
-  for y in range(0, h):
-    if img.getpixel((x,y)) == (255, 255, 0):
-      start = (x, y)
+def isNewPath(stateAction, pathAction):
+  return True if stateAction != pathAction else False
+
+def findMapStart(map, startColor, startFlag):
+  # Find & set start state
+  w, h = map.size
+  for x in range(0, w):
+    for y in range(0, h):
+      if img.getpixel((x,y)) == startColor:
+        return (startFlag, x, y)
+
+  return None
+
 
 class ActionEnum(Enum):
   NORTH = 0
@@ -27,31 +37,49 @@ class ActionEnum(Enum):
   EAST = 2
   WEST = 3
 
-state_modifier = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+#PIL holds (0,0) @ top left corner so N and S modifiers are flipped
+state_modifier = [(0, -1), (0, 1), (1, 0), (-1, 0)]
 
-start = (5, 7)
+#####    PROGRAM START    #####
+img = Image.open('data/maps/map_1.png').convert('RGB')
+G = nx.Graph()
 
-stack = [(-1,) + start]
-counter = 1
+start_flag = -1
 
-first = True
-debug = 30
-while(debug > 0):
+start_state = findMapStart(img, (255, 255, 0), -1)
+if start_state == None:
+  print("MAP_ERROR: No start position found")
+  exit(1)
+
+
+# Create stack to start with based on start position
+print(img.size)
+stack = [start_state]
+
+debug = True
+limit = 6
+while(limit > 0):
+  # Take current state off the stack
   state = stack.pop()
-  if(first):
-    prevState = state
-    first = False
-  print("Following State:", state)
 
-  # if the previous action is still valid append that first
-  # and increment counter
-  nextState = calcAction(state, state[0])
-  if state[0] != -1 and isValidState(nextState, prevState):
-    stack.append(nextState)
-    counter += 1
-  else:
+  # If this is the first run define certain paramters
+  if(state[0] == start_flag): #if first run
     counter = 1
+    prevState = state
 
+  # --- Determine Path Branching ---
+  # Determine wether the current state is a new branch and do appropriate actions
+  if state[0] == start_flag or isNewPath(state[0], root_path[0]):
+    counter = 1
+    root_path = state
+  else:
+    counter += 1
+
+  # --- Determine Valid Next Actions ---
+  # if the previous action is still valid append it first & increment counter
+  nextState = calcAction(state, state[0])
+  if state[0] != start_flag and isValidState(nextState, prevState):
+    stack.append(nextState)
   # find all other valid actions and append them to the stack
   for action in ActionEnum:
     if action.value != state[0]:
@@ -59,9 +87,15 @@ while(debug > 0):
       if isValidState(nextState, prevState):
         stack.append(nextState)
 
+  # --- Do Printing ---
+  if debug:
+    print("\n-------------------------")
+    print("Following State:", state, ("Start" if state[0] == -1 else ActionEnum(state[0]).name))
+    print("Following Path:", ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name), "Count:", counter)
+    print(stack)
+
+  # Prepare state information for next iteration
   prevState = state
-  print(stack)
-  print(counter)
+  limit -= 1
 
-
-  debug -= 1
+#end while loop
