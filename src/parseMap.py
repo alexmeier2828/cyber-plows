@@ -12,7 +12,6 @@ def isValidState(state, prevState):
   # TODO: python define func in func to simplify these if statements, keep short circuiting
   w, h = img.size
   inBounds = True if stateXY[0] >= 0 and stateXY[0] <= w-1 and stateXY[1] >= 0 and stateXY[1] < h-1 else False
-  print(stateXY, inBounds)
 
   #if inBounds, is a road, and isn't the state we just came from (prevents backstepping)
   return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) and stateXY != prevState[1:] else False
@@ -30,7 +29,7 @@ def findMapStart(map, startColor, startFlag):
 
   return None
 
-
+# TODO: Add InverseActionEnum
 class ActionEnum(Enum):
   NORTH = 0
   SOUTH = 1
@@ -42,7 +41,7 @@ state_modifier = [(0, -1), (0, 1), (1, 0), (-1, 0)]
 
 #####    PROGRAM START    #####
 img = Image.open('data/maps/map_1.png').convert('RGB')
-G = nx.Graph()
+MapGraph = nx.Graph()
 
 start_flag = -1
 
@@ -52,33 +51,35 @@ if start_state == None:
   exit(1)
 
 
-# Create stack to start with based on start position
-print(img.size)
+# Initialize a stack with the start position
 stack = [start_state]
 
 debug = True
 limit = 6
-while(limit > 0):
+while(stack != [] and limit > 0):
   # Take current state off the stack
   state = stack.pop()
+  isStart = True if state[0] == start_flag else False
 
-  # If this is the first run define certain paramters
-  if(state[0] == start_flag): #if first run
-    counter = 1
+  # If first iter define needed params
+  if(isStart):
     prevState = state
-
-  # --- Determine Path Branching ---
-  # Determine wether the current state is a new branch and do appropriate actions
-  if state[0] == start_flag or isNewPath(state[0], root_path[0]):
-    counter = 1
     root_path = state
+    counter = 1
+  # --- Determine Path Branching ---
+  # If new vector path (changed action/direction)
+  elif isNewPath(state[0], root_path[0]):
+    # Reset path tracking
+    root_path = state
+    counter = 1
+  # If same path increment counter
   else:
     counter += 1
 
   # --- Determine Valid Next Actions ---
-  # if the previous action is still valid append it first & increment counter
+  # if the previous action is still valid append it first
   nextState = calcAction(state, state[0])
-  if state[0] != start_flag and isValidState(nextState, prevState):
+  if not isStart and isValidState(nextState, prevState):
     stack.append(nextState)
   # find all other valid actions and append them to the stack
   for action in ActionEnum:
@@ -90,8 +91,8 @@ while(limit > 0):
   # --- Do Printing ---
   if debug:
     print("\n-------------------------")
-    print("Following State:", state, ("Start" if state[0] == -1 else ActionEnum(state[0]).name))
-    print("Following Path:", ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name), "Count:", counter)
+    print("State:", state, ("Start" if isStart else ActionEnum(state[0]).name))
+    print("Following Path:", ("Start" if isStart else ActionEnum(root_path[0]).name), "of length", counter)
     print(stack)
 
   # Prepare state information for next iteration
