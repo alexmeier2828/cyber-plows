@@ -4,6 +4,7 @@
 import tkinter as tk
 from views.mapView import MapView
 from state import *
+from game import Game
 
 #main function
 
@@ -14,11 +15,13 @@ def main():
 
     gameState = GameState("../data/maps/map_2.png") #TODO pass in an actual map PNG
     mapView = MapView(top, gameState)
-    mapView.draw(gameState)
+
+    demoInstrutions = [ActionEnum.WEST, ActionEnum.WEST, ActionEnum.NORTH, ActionEnum.EAST]
+    game = Game(gameState, demoInstrutions, mapView)
 
 
 
 
-    top.mainloop()
+    game.gameLoop()
 if __name__ == '__main__':
     main()
