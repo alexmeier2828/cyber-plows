@@ -34,7 +34,8 @@ class MapView:
                 if tile is TileTypes.HOME:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.home_sprite, anchor=tk.NE)
 
-                if x is gameState.plow.currentPosition[0] and y is gameState.plow.currentPosition[1]:
+                if x == gameState.plow.currentPosition[0] and y == gameState.plow.currentPosition[1]:
+                    print(str(gameState.plow.currentPosition[0]) + " " + str(gameState.plow.currentPosition[1]))
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.plow_sprite, anchor=tk.NE)
         self.mapCanvas.pack()
         self.parent.update_idletasks()

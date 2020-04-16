@@ -21,20 +21,23 @@ class GameState:
         if  instruction == ActionEnum.WAIT:
             nextPosition = position
         elif instruction == ActionEnum.NORTH:
-            next_position = (position[0], position[1] -1)
+            if position[1] - 1 >= 0:
+                nextposition = (position[0], position[1] -1)
 
         elif instruction == ActionEnum.EAST:
-            next_position = (position[0] +1, position[1])
+            if position[0] + 1 < self.mapData.width:
+                nextPosition = (position[0] +1, position[1])
 
         elif instruction == ActionEnum.SOUTH:
-            next_position = (position[0], position[1] +1)
+            if position[1] + 1 < self.mapData.height:
+                nextPosition = (position[0], position[1] +1)
 
         else: #we are going west
-            next_position = (position[0] -1, position[1])
+            if position[0] - 1 >= 0:
+                nextPosition = (position[0] -1, position[1])
 
         self.plow.currentPosition = nextPosition
-        self.mapData.mapArray[next_position[0]][next_position[1]] = TileTypes.ROAD
-        print(next_position)
+        self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
 
 #creates a map representation using an image file
 class MapData:
