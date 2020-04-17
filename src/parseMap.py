@@ -7,15 +7,15 @@ import matplotlib.pyplot as plt
 def calcAction(state, stateNum):
   return (stateNum, state[1] + state_modifier[stateNum][0], state[2] + state_modifier[stateNum][1])
 
-def isValidState(state, prevState):
+def isValidState(state):
   stateXY = state[1:]
 
   # TODO: python define func in func to simplify these if statements, keep short circuiting
   w, h = img.size
   inBounds = True if stateXY[0] >= 0 and stateXY[0] < w and stateXY[1] >= 0 and stateXY[1] < h else False
 
-  #if inBounds, is a road, and isn't the state we just came from (prevents backstepping)
-  return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) and stateXY != prevState[1:] else False
+  #if inBounds and is a road
+  return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) else False
 
 def isNewPath(stateAction, pathAction):
   return True if stateAction != pathAction else False
@@ -27,10 +27,7 @@ def findMapStart(map, startColor, startFlag):
     for y in range(0, h):
       if img.getpixel((x,y)) == startColor:
         return (startFlag, x, y)
-
   return None
-
-visitedStates = set()
 
 class ActionEnum(Enum):
   NORTH = 0
@@ -44,8 +41,6 @@ inverse_action = np.array((1, 0, 3, 2), dtype=int)
 state_modifier = [(0, -1), (0, 1), (1, 0), (-1, 0)]
 
 #####    PROGRAM START    #####
-total_distance = 0
-
 img = Image.open('data/maps/map_1.png').convert('RGB')
 MapGraph = nx.Graph()
 
@@ -59,8 +54,10 @@ if start_state == None:
 
 # Initialize a stack with the start position
 stack = [start_state]
+visitedStates = set()
 
-debug = True
+total_distance = 0
+debug = False
 limit = 50
 while(stack != [] and limit > 0):
   # Take current state off the stack
@@ -71,13 +68,28 @@ while(stack != [] and limit > 0):
   if(isStart):
     prevState = state
     root_path = state
-    #visitedStates.add(root_path)
-    counter = 1
+    counter = 0
+
+  # --- Determine Valid Next Actions ---
+  # if the previous action is still valid append it first
+  nextState = calcAction(state, state[0])
+  if not isStart and isValidState(nextState) and state[1:] not in visitedStates:
+      stack.append(nextState)
+  # find all other valid actions and append them to the stack
+  for action in ActionEnum:
+    if action.value != state[0]:
+      nextState = calcAction(state, action.value)
+      if isValidState(nextState) and nextState[1:] != prevState[1:] and state[1:] not in visitedStates:
+        stack.append(nextState)
+
+
   # --- Determine Path Branching ---
   # If new vector path (changed action/direction)
-  elif isNewPath(state[0], root_path[0]):
+  if isNewPath(state[0], root_path[0]):
     # Add to Graph
-    #if state[1:] not in visitedStates:
+    print("Following Path:", ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name), "of length", counter)
+    print("Path:", state)
+    #print(visitedStates)
     MapGraph.add_edge(root_path[1:], state[1:])
     visitedStates.add(root_path[1:])
 
@@ -87,18 +99,6 @@ while(stack != [] and limit > 0):
   # If same path increment counter
   else:
     counter += 1
-
-  # --- Determine Valid Next Actions ---
-  # if the previous action is still valid append it first
-  nextState = calcAction(state, state[0])
-  if not isStart and isValidState(nextState, prevState) and state[1:] not in visitedStates:
-    stack.append(nextState)
-  # find all other valid actions and append them to the stack
-  for action in ActionEnum:
-    if action.value != state[0]:
-      nextState = calcAction(state, action.value)
-      if isValidState(nextState, prevState) and state[1:] not in visitedStates:
-        stack.append(nextState)
 
   # --- Do Printing ---
   if debug:
@@ -114,11 +114,14 @@ while(stack != [] and limit > 0):
 
 #end while loop
 
-if debug:
-  print(visitedStates)
-
-print(total_distance)
+print("Traveled:", total_distance)
+#print(visitedStates)
 
 # Draw Graph
-nx.draw(MapGraph, with_labels=True, font_weight='bold')
+#for node in MapGraph.nodes:
+node_positions = {node: (node[0], -node[1]) for node in MapGraph.nodes}
+
+#print(MapGraph.nodes(data=True))
+
+nx.draw(MapGraph, pos=node_positions, with_labels=True, font_weight='bold')
 plt.show()
