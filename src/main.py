@@ -13,11 +13,11 @@ def main():
     top = tk.Tk()
 
 
-    gameState = GameState("../data/maps/map_2.png") #TODO pass in an actual map PNG
+    gameState = GameState("../data/maps/map_1.png") #TODO pass in an actual map PNG
     mapView = MapView(top, gameState)
 
-    demoInstrutions = [ActionEnum.WEST, ActionEnum.WEST, ActionEnum.NORTH, ActionEnum.EAST]
-    game = Game(gameState, demoInstrutions, mapView)
+    #demoInstrutions = [ActionEnum.EAST, ActionEnum.EAST, ActionEnum.WEST, ActionEnum.NORTH, ActionEnum.WEST, ActionEnum.SOUTH, ActionEnum.WAIT]
+    game = Game(gameState, [ActionEnum.WAIT], mapView)
 
 
 

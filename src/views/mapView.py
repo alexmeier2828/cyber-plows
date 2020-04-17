@@ -29,6 +29,8 @@ class MapView:
                 tile = gameState.mapData.mapArray[x][y]
                 if tile is TileTypes.ROAD:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.road_sprite, anchor=tk.NE)
+                if tile is TileTypes.SNOW:
+                    self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.snow_sprite, anchor=tk.NE)
                 if tile is TileTypes.WALL:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.wall_sprite, anchor=tk.NE)
                 if tile is TileTypes.HOME:
@@ -36,7 +38,7 @@ class MapView:
 
                 if x == gameState.plow.currentPosition[0] and y == gameState.plow.currentPosition[1]:
                     print(str(gameState.plow.currentPosition[0]) + " " + str(gameState.plow.currentPosition[1]))
-                    self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.plow_sprite, anchor=tk.NE)
+                    self.mapCanvas.create_image((x + 1)*32, (y)*32, image=self.plow_sprite, anchor=tk.NE)
         self.mapCanvas.pack()
         self.parent.update_idletasks()
         self.parent.update()

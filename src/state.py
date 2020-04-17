@@ -37,7 +37,8 @@ class GameState:
                 nextPosition = (position[0] -1, position[1])
 
         self.plow.currentPosition = nextPosition
-        self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
+        if self.mapData.mapArray[nextPosition[0]][nextPosition[1]] is TileTypes.SNOW:
+            self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
 
 #creates a map representation using an image file
 class MapData:
@@ -70,7 +71,7 @@ class MapData:
                 #print(pixels.getpixel((x, y)))
                 r,g,b = pixels.getpixel((x,y))
                 if r == 0 and g == 0 and b == 0:
-                    mapList[x][y] = TileTypes.ROAD
+                    mapList[x][y] = TileTypes.SNOW
                 if r != 0 and g != 0 and b == 0:
                     mapList[x][y] = TileTypes.HOME
         return mapList
@@ -86,10 +87,12 @@ class Plow:
         self.actions = self.getActions(self.currentPosition, mapData)
         self.nextPosition = self.getNextPosition(self.currentPosition, mapData)
 
-        #enter a position to see how Plow changes based on that position.
-        random_position = (3,3)
+        # #enter a position to see how Plow changes based on that position.
+        # random_position = (3,3)
 
-        self.currentPosition = random_position
+
+
+        self.currentPosition = self.homeBase
         self.actions = self.getActions(self.currentPosition, mapData)
         self.nextPosition = self.getNextPosition(self.currentPosition, mapData)
 
