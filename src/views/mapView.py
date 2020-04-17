@@ -19,6 +19,7 @@ class MapView:
         self.wall_sprite = tk.PhotoImage(file=r'../data/sprites/wall.gif')
         self.snow_sprite = tk.PhotoImage(file=r'../data/sprites/snow.gif')
         self.home_sprite = tk.PhotoImage(file=r'../data/sprites/home.gif')
+        self.plow_sprite = tk.PhotoImage(file=r'../data/sprites/plow.gif')
 
     def draw(self, gameState):
 
@@ -31,4 +32,5 @@ class MapView:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.wall_sprite, anchor=tk.NE)
                 if tile is TileTypes.HOME:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.home_sprite, anchor=tk.NE)
+                    self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.plow_sprite, anchor=tk.NE)
         self.mapCanvas.pack()
