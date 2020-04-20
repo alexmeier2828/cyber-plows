@@ -58,6 +58,7 @@ visitedStates = set()
 
 total_distance = 0
 debug = False
+graph_debug = True
 limit = 50
 while(stack != [] and limit > 0):
   # Take current state off the stack
@@ -74,7 +75,7 @@ while(stack != [] and limit > 0):
   # if the previous action is still valid append it first
   nextState = calcAction(state, state[0])
   if not isStart and isValidState(nextState) and state[1:] not in visitedStates:
-      stack.append(nextState)
+    stack.append(nextState)
   # find all other valid actions and append them to the stack
   for action in ActionEnum:
     if action.value != state[0]:
@@ -87,14 +88,16 @@ while(stack != [] and limit > 0):
   # If new vector path (changed action/direction)
   if isNewPath(state[0], root_path[0]):
     # Add to Graph
-    print("Following Path:", ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name), "of length", counter)
-    print("Path:", state)
-    #print(visitedStates)
-    MapGraph.add_edge(root_path[1:], state[1:])
+    if graph_debug:
+      rootAction = ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name[0])
+      prevAction = ("Start" if prevState[0] == -1 else ActionEnum(prevState[0]).name[0])
+      print("Path", rootAction, "of", counter, (rootAction, root_path[1], root_path[2]), "to", (prevAction, prevState[1], prevState[2]))
+
+    MapGraph.add_edge(root_path[1:], prevState[1:])
     visitedStates.add(root_path[1:])
 
     # Reset path tracking
-    root_path = state
+    root_path = (state[0], prevState[1], prevState[2])
     counter = 1
   # If same path increment counter
   else:
