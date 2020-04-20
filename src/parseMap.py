@@ -7,15 +7,15 @@ from collections import namedtuple
 
 def general_debugging():
   print("\n-------------------------")
-  print("State:", state, ("Start" if isStart else ActionEnum(state.action).name))
-  print("Following Path:", ("Start" if isStart else ActionEnum(state_path_root.action).name), "of length", counter)
+  print("State:", state, ("Start" if is_start else ActionEnum(state.action).name))
+  print("Following Path:", ("Start" if is_start else ActionEnum(state_path_root.action).name), "of length", counter)
   print(stack)
 
 def graph_debugging():
   action_root = ("Start" if state_path_root.action == -1 else ActionEnum(state_path_root.action).name[0])
   action_prev = ("Start" if state_prev.action == -1 else ActionEnum(state_prev.action).name[0])
   #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
-  print("Path", rootAction, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.y))
+  print("Path", action_root, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.point.y))
 
 def calc_state(state, numAction):
   return State(numAction, Point(state.x + state_modifier[numAction].x, state.y + state_modifier[numAction].y))
@@ -59,7 +59,7 @@ State = namedtuple('State', ['action', 'point'])
 state_modifier = [Point(0, -1), Point(0, 1), Point(1, 0), Point(-1, 0)]
 
 #####    PROGRAM START    #####
-img = Image.open('data/maps/map_1.png').convert('RGB')
+img = Image.open('data/maps/map_2.png').convert('RGB')
 MapGraph = nx.Graph()
 
 start_flag = -1
@@ -82,10 +82,10 @@ limit = 50 #TODO: removes
 while(stack != [] and limit > 0):
   # Take current state off the stack
   state = stack.pop()
-  isStart = True if state.action == start_flag else False
+  is_start = True if state.action == start_flag else False
 
   # If first iter define needed params
-  if isStart:
+  if is_start:
     total_distance = 0
     walked_nodes = 0
     state_prev = state
@@ -109,7 +109,7 @@ while(stack != [] and limit > 0):
   # If new vector path (changed action/direction)
   if is_new_path(state.action, state_path_root.action):
     # Graph Debug Printing
-    if debug_graph: graph_debugging
+    if debug_graph: graph_debugging()
 
     # Add to Graph
     #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
