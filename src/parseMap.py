@@ -16,6 +16,7 @@ def graph_debugging():
   action_prev = ("Start" if state_prev.action == -1 else ActionEnum(state_prev.action).name[0])
   #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
   print("Path", action_root, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.point.y))
+  #print("Stack:", stack, "\n")
 
 def calc_state(state, numAction):
   return State(numAction, Point(state.x + state_modifier[numAction].x, state.y + state_modifier[numAction].y))
@@ -28,9 +29,6 @@ def is_valid_state(state):
   #if inBounds and is a road
   in_bounds = True if x >= 0 and x < w and y >= 0 and y < h else False
   return True if in_bounds and img.getpixel(state) == (0, 0, 0) else False
-
-def no_back_track(nextState, state_prev):
-  return True if nextState != state_prev else False
 
 def is_new_path(stateAction, pathAction):
   return True if stateAction != pathAction else False
@@ -77,8 +75,9 @@ visitedStates = set()
 #TODO: make these macros
 debug = False
 debug_graph = True
+debug_graph_gui = True
 
-limit = 50 #TODO: removes
+limit = 300 #TODO: removes
 while(stack != [] and limit > 0):
   # Take current state off the stack
   state = stack.pop()
@@ -93,23 +92,28 @@ while(stack != [] and limit > 0):
     counter = 0
 
   # --- Determine Valid Next Actions ---
-  # If previous action is still valid append it first (FIFO)
-  elif is_valid_state((nextState := calc_state(state.point, state.action)).point) and state.point not in visitedStates:
-    stack.append(nextState)
-
-  # find all other valid actions (not previous action) and append them to the stack
+  # Check all orthogonal actions and append them to the stack
+  adjacent = False
   for action in ActionEnum:
-    if action.value != state.action:
+    if action.value != state.action and action.value != inverse_action[state.action]:
       nextState = calc_state(state.point, action.value)
-      if no_back_track(nextState.point, state_prev.point) and is_valid_state(nextState.point) and state.point not in visitedStates:
+      if is_valid_state(nextState.point) and state.point not in visitedStates:
+        adjacent = True
         stack.append(nextState)
 
+  # If previous action is still valid append it last (LIFO)
+  if not is_start and is_valid_state((nextState := calc_state(state.point, state.action)).point) and state.point not in visitedStates:
+    adjacent = True
+    stack.append(nextState)
+
+  print(adjacent)
 
   # --- Determine Path Branching ---
   # If new vector path (changed action/direction)
   if is_new_path(state.action, state_path_root.action):
     # Graph Debug Printing
     if debug_graph: graph_debugging()
+    print("Adjacency:", adjacent)
 
     # Add to Graph
     #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
@@ -118,6 +122,8 @@ while(stack != [] and limit > 0):
 
     # Reset path tracking
     state_path_root = State(state.action, state_prev.point)
+    #state_path_root = State(state.action, state.point)
+
     total_distance += counter
     counter = 1
   # If same path increment counter
@@ -144,5 +150,6 @@ node_positions = {node: (node[0], -node[1]) for node in MapGraph.nodes}
 #print(MapGraph.nodes(data=True))
 
 # Draw Graph
-nx.draw(MapGraph, pos=node_positions, with_labels=True, font_weight='bold')
-plt.show()
+if debug_graph_gui:
+  nx.draw(MapGraph, pos=node_positions, with_labels=True, font_weight='bold')
+  plt.show()
