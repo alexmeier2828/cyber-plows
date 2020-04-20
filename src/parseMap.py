@@ -3,30 +3,45 @@ import numpy as np
 from PIL import Image
 import networkx as nx
 import matplotlib.pyplot as plt
+from collections import namedtuple
 
-def calcAction(state, stateNum):
-  return (stateNum, state[1] + state_modifier[stateNum][0], state[2] + state_modifier[stateNum][1])
+def general_debugging():
+  print("\n-------------------------")
+  print("State:", state, ("Start" if isStart else ActionEnum(state.action).name))
+  print("Following Path:", ("Start" if isStart else ActionEnum(state_path_root.action).name), "of length", counter)
+  print(stack)
 
-def isValidState(state):
-  stateXY = state[1:]
+def graph_debugging():
+  action_root = ("Start" if state_path_root.action == -1 else ActionEnum(state_path_root.action).name[0])
+  action_prev = ("Start" if state_prev.action == -1 else ActionEnum(state_prev.action).name[0])
+  #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
+  print("Path", rootAction, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.y))
 
+def calc_state(state, numAction):
+  return State(numAction, Point(state.x + state_modifier[numAction].x, state.y + state_modifier[numAction].y))
+
+def is_valid_state(state):
   # TODO: python define func in func to simplify these if statements, keep short circuiting
+  x, y = state
   w, h = img.size
-  inBounds = True if stateXY[0] >= 0 and stateXY[0] < w and stateXY[1] >= 0 and stateXY[1] < h else False
 
   #if inBounds and is a road
-  return True if inBounds and img.getpixel(stateXY) == (0, 0, 0) else False
+  in_bounds = True if x >= 0 and x < w and y >= 0 and y < h else False
+  return True if in_bounds and img.getpixel(state) == (0, 0, 0) else False
 
-def isNewPath(stateAction, pathAction):
+def no_back_track(nextState, state_prev):
+  return True if nextState != state_prev else False
+
+def is_new_path(stateAction, pathAction):
   return True if stateAction != pathAction else False
 
-def findMapStart(map, startColor, startFlag):
+def find_map_start(map, startColor):
   # Find & set start state
   w, h = map.size
   for x in range(0, w):
     for y in range(0, h):
       if img.getpixel((x,y)) == startColor:
-        return (startFlag, x, y)
+        return Point(x, y)
   return None
 
 class ActionEnum(Enum):
@@ -37,94 +52,97 @@ class ActionEnum(Enum):
 
 inverse_action = np.array((1, 0, 3, 2), dtype=int)
 
+Point = namedtuple('Point', ['x', 'y'])
+State = namedtuple('State', ['action', 'point'])
+
 #PIL holds (0,0) @ top left corner so N and S modifiers are flipped
-state_modifier = [(0, -1), (0, 1), (1, 0), (-1, 0)]
+state_modifier = [Point(0, -1), Point(0, 1), Point(1, 0), Point(-1, 0)]
 
 #####    PROGRAM START    #####
 img = Image.open('data/maps/map_1.png').convert('RGB')
 MapGraph = nx.Graph()
 
 start_flag = -1
-
-start_state = findMapStart(img, (255, 255, 0), -1)
-if start_state == None:
+start_point = find_map_start(img, (255, 255, 0))
+if start_point == None:
   print("MAP_ERROR: No start position found")
   exit(1)
-
+else:
+  start_state = State(start_flag, start_point)
 
 # Initialize a stack with the start position
 stack = [start_state]
 visitedStates = set()
 
-total_distance = 0
+#TODO: make these macros
 debug = False
-graph_debug = True
-limit = 50
+debug_graph = True
+
+limit = 50 #TODO: removes
 while(stack != [] and limit > 0):
   # Take current state off the stack
   state = stack.pop()
-  isStart = True if state[0] == start_flag else False
+  isStart = True if state.action == start_flag else False
 
   # If first iter define needed params
-  if(isStart):
-    prevState = state
-    root_path = state
+  if isStart:
+    total_distance = 0
+    walked_nodes = 0
+    state_prev = state
+    state_path_root = state
     counter = 0
 
   # --- Determine Valid Next Actions ---
-  # if the previous action is still valid append it first
-  nextState = calcAction(state, state[0])
-  if not isStart and isValidState(nextState) and state[1:] not in visitedStates:
+  # If previous action is still valid append it first (FIFO)
+  elif is_valid_state((nextState := calc_state(state.point, state.action)).point) and state.point not in visitedStates:
     stack.append(nextState)
-  # find all other valid actions and append them to the stack
+
+  # find all other valid actions (not previous action) and append them to the stack
   for action in ActionEnum:
-    if action.value != state[0]:
-      nextState = calcAction(state, action.value)
-      if isValidState(nextState) and nextState[1:] != prevState[1:] and state[1:] not in visitedStates:
+    if action.value != state.action:
+      nextState = calc_state(state.point, action.value)
+      if no_back_track(nextState.point, state_prev.point) and is_valid_state(nextState.point) and state.point not in visitedStates:
         stack.append(nextState)
 
 
   # --- Determine Path Branching ---
   # If new vector path (changed action/direction)
-  if isNewPath(state[0], root_path[0]):
-    # Add to Graph
-    if graph_debug:
-      rootAction = ("Start" if root_path[0] == -1 else ActionEnum(root_path[0]).name[0])
-      prevAction = ("Start" if prevState[0] == -1 else ActionEnum(prevState[0]).name[0])
-      print("Path", rootAction, "of", counter, (rootAction, root_path[1], root_path[2]), "to", (prevAction, prevState[1], prevState[2]))
+  if is_new_path(state.action, state_path_root.action):
+    # Graph Debug Printing
+    if debug_graph: graph_debugging
 
-    MapGraph.add_edge(root_path[1:], prevState[1:])
-    visitedStates.add(root_path[1:])
+    # Add to Graph
+    #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
+    MapGraph.add_edge((state_path_root.point.x, state_path_root.point.y), (state_prev.point.x, state_prev.point.y))
+    visitedStates.add(state_path_root.point)
 
     # Reset path tracking
-    root_path = (state[0], prevState[1], prevState[2])
+    state_path_root = State(state.action, state_prev.point)
+    total_distance += counter
     counter = 1
   # If same path increment counter
   else:
     counter += 1
 
   # --- Do Printing ---
-  if debug:
-    print("\n-------------------------")
-    print("State:", state, ("Start" if isStart else ActionEnum(state[0]).name))
-    print("Following Path:", ("Start" if isStart else ActionEnum(root_path[0]).name), "of length", counter)
-    print(stack)
+  if debug: general_debugging()
 
   # Prepare state information for next iteration
-  prevState = state
-  total_distance += 1
+  state_prev = state
+  walked_nodes += 1
   limit -= 1
 
-#end while loop
+# --- END While Loop ---
 
-print("Traveled:", total_distance)
-#print(visitedStates)
+print("Walked:", walked_nodes, "\nTraveled:", total_distance)
 
-# Draw Graph
+if debug: print("visitedStates\n", visitedStates)
+
+# Add data to graph nodes
 #for node in MapGraph.nodes:
 node_positions = {node: (node[0], -node[1]) for node in MapGraph.nodes}
-
 #print(MapGraph.nodes(data=True))
 
+# Draw Graph
 nx.draw(MapGraph, pos=node_positions, with_labels=True, font_weight='bold')
 plt.show()
