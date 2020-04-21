@@ -27,4 +27,17 @@ def generalSearch(agent, queue_function, queue):
             visited[node.s] = True
             queue_function(nodes, node.expand(agent), agent)
 
-    return node
+    return pathFromNode(node)
+
+
+
+#converts a node tree into a sequence of directons
+def pathFromNode(node):
+    path = []
+    head = node
+
+    while head is not None:
+        path.push(head.d)
+        head = head.parent
+
+    return path
