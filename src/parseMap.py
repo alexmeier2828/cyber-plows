@@ -5,18 +5,20 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from collections import namedtuple
 
-def general_debugging():
-  print("\n-------------------------")
-  print("State:", state, ("Start" if is_start else ActionEnum(state.action).name))
-  print("Following Path:", ("Start" if is_start else ActionEnum(state_path_root.action).name), "of length", counter)
-  print(stack)
+def print_stack(stack):
+  print("[", sep="", end="")
+  for state in stack: print("(", ACTION_ENUM(state.action).name[0], ", ", state.point.x, ", ", state.point.y, "), ", sep="", end="")
+  print("]", sep="")
 
 def graph_debugging():
-  action_root = ("Start" if state_path_root.action == -1 else ActionEnum(state_path_root.action).name[0])
-  action_prev = ("Start" if state_prev.action == -1 else ActionEnum(state_prev.action).name[0])
+  action_root = ("Start" if state_path_root.action == -1 else ACTION_ENUM(state_path_root.action).name[0])
+  action_prev = ("Start" if state_prev.action == -1 else ACTION_ENUM(state_prev.action).name[0])
   #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
-  print("Path", action_root, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.point.y))
-  #print("Stack:", stack, "\n")
+  print("Path", action_root, "of", counter, (action_root, state_path_root.point.x, state_path_root.point.y), "to", (action_prev, state_prev.point.x, state_prev.point.y), "Adjacent" if adjacent else "")
+  print("State: (", ACTION_ENUM(state.action).name[0], ", ", state.point.x, ", ", state.point.y, ")", sep="")
+  #print("Action:", ACTION_ENUM(state.action).name[0], "Inverse:", ACTION_ENUM(inverse_action[state.action]).name[0])
+  print_stack(stack)
+  print()
 
 def calc_state(state, numAction):
   return State(numAction, Point(state.x + state_modifier[numAction].x, state.y + state_modifier[numAction].y))
@@ -26,7 +28,7 @@ def is_valid_state(state):
   x, y = state
   w, h = img.size
 
-  #if inBounds and is a road
+  #if is in_bounds and is a road
   in_bounds = True if x >= 0 and x < w and y >= 0 and y < h else False
   return True if in_bounds and img.getpixel(state) == (0, 0, 0) else False
 
@@ -42,7 +44,7 @@ def find_map_start(map, startColor):
         return Point(x, y)
   return None
 
-class ActionEnum(Enum):
+class ACTION_ENUM(Enum):
   NORTH = 0
   SOUTH = 1
   EAST = 2
@@ -57,7 +59,7 @@ State = namedtuple('State', ['action', 'point'])
 state_modifier = [Point(0, -1), Point(0, 1), Point(1, 0), Point(-1, 0)]
 
 #####    PROGRAM START    #####
-img = Image.open('data/maps/map_2.png').convert('RGB')
+img = Image.open('data/maps/map_5.png').convert('RGB')
 MapGraph = nx.Graph()
 
 start_flag = -1
@@ -70,15 +72,15 @@ else:
 
 # Initialize a stack with the start position
 stack = [start_state]
-visitedStates = set()
+visited_states = set()
 
 #TODO: make these macros
-debug = False
+debug_stack = False
 debug_graph = True
 debug_graph_gui = True
 
-limit = 300 #TODO: removes
-while(stack != [] and limit > 0):
+max_stack_size = 0
+while(stack != []):
   # Take current state off the stack
   state = stack.pop()
   is_start = True if state.action == start_flag else False
@@ -91,38 +93,24 @@ while(stack != [] and limit > 0):
     state_path_root = state
     counter = 0
 
-  # --- Determine Valid Next Actions ---
-  # Check all orthogonal actions and append them to the stack
-  adjacent = False
-  for action in ActionEnum:
-    if action.value != state.action and action.value != inverse_action[state.action]:
-      nextState = calc_state(state.point, action.value)
-      if is_valid_state(nextState.point) and state.point not in visitedStates:
-        adjacent = True
-        stack.append(nextState)
-
-  # If previous action is still valid append it last (LIFO)
-  if not is_start and is_valid_state((nextState := calc_state(state.point, state.action)).point) and state.point not in visitedStates:
-    adjacent = True
-    stack.append(nextState)
-
-  print(adjacent)
-
   # --- Determine Path Branching ---
   # If new vector path (changed action/direction)
   if is_new_path(state.action, state_path_root.action):
-    # Graph Debug Printing
-    if debug_graph: graph_debugging()
-    print("Adjacency:", adjacent)
+    if debug_graph: # Graph Debug Printing
+      graph_debugging()
 
     # Add to Graph
     #TODO: better way to output Point tuple without name attributes showing? Makes printing & Graph id messy
     MapGraph.add_edge((state_path_root.point.x, state_path_root.point.y), (state_prev.point.x, state_prev.point.y))
-    visitedStates.add(state_path_root.point)
+    visited_states.add(state_path_root.point)
+
+    #if state == State(2, (5, 4)): adjacent = False
 
     # Reset path tracking
-    state_path_root = State(state.action, state_prev.point)
-    #state_path_root = State(state.action, state.point)
+    if adjacent:
+      state_path_root = State(state.action, state_prev.point)
+    else:
+      state_path_root = State(state.action, calc_state(state.point, inverse_action[state.action]).point)
 
     total_distance += counter
     counter = 1
@@ -130,19 +118,34 @@ while(stack != [] and limit > 0):
   else:
     counter += 1
 
-  # --- Do Printing ---
-  if debug: general_debugging()
+  # --- Determine Valid Next Actions ---
+  if debug_stack: print("State: (", "Start" if state.action == -1 else ACTION_ENUM(state.action).name[0], ", ", state.point.x, ", ", state.point.y, ")", sep="")
 
-  # Prepare state information for next iteration
+  # Check all orthogonal actions and append them to the stack
+  adjacent = False
+  if state.point not in visited_states:
+    for action in ACTION_ENUM:
+      if action.value != state.action and action.value != inverse_action[state.action]:
+        state_next = calc_state(state.point, action.value)
+        if is_valid_state(state_next.point):
+          adjacent = True
+          stack.append(state_next)
+
+    # If previous action is still valid append it last (LIFO)
+    if not is_start and is_valid_state((state_next := calc_state(state.point, state.action)).point):
+      adjacent = True
+      stack.append(state_next)
+
+  # --- Prepare for next Iteration
+  if max_stack_size < len(stack): max_stack_size = len(stack)
   state_prev = state
   walked_nodes += 1
-  limit -= 1
 
 # --- END While Loop ---
-
+print("Peak stack size:", max_stack_size)
+print("Set size:", len(visited_states))
 print("Walked:", walked_nodes, "\nTraveled:", total_distance)
-
-if debug: print("visitedStates\n", visitedStates)
+if debug_stack: print("Visited States\n", visited_states)
 
 # Add data to graph nodes
 #for node in MapGraph.nodes:
