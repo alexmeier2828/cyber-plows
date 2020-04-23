@@ -5,10 +5,12 @@ import sys
 import os
 from enum import Enum
 from PIL import Image
+from map_parse import MapGraph
 
 class GameState:
     def __init__(self, mapPng):
         self.mapData = MapData(mapPng)
+        self.mapGraph = MapGraph(mapPng)
         #mapData = self.mapData
         self.plow = Plow(self.mapData)
         #print("plow done")

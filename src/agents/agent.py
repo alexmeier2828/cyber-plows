@@ -3,6 +3,7 @@ this file is a base class for all agent classes and should not be instantiated
 
 """
 from generalSearch import *
+from agentState import AgentState
 
 
 class  Agent:
@@ -17,7 +18,11 @@ class  Agent:
 
     def isGoalState(self, state):
         #checks if goal state is reached
-        raise NotImplementedError
+        for row in state.snow:
+            if row.contains(True):
+                return false
+            else:
+                return true
 
     def getNextState(self, instruction):
         #returns the next state
@@ -25,6 +30,8 @@ class  Agent:
 
     def getSuccessors(self, state):
         #returns a list of successor states
+
+        #should return (state, direction) pair
         raise NotImplementedError
 
 
@@ -36,8 +43,8 @@ class dfsAgent(Agent):
     def generatePath(self, state):
 
         def queue_function(nodes, newNodes, problem):
-        for n in newNodes:
-            nodes.push(n)
+            for n in newNodes:
+                nodes.push(n)
 
         stack = []
         stack.push(Node(None, self.startState, None))
@@ -53,8 +60,8 @@ class bfsAgent(Agent):
     def generatePath(self, state):
 
         def queue_function(nodes, newNodes, problem):
-        for n in newNodes:
-            nodes.append(n)
+            for n in newNodes:
+                nodes.append(n)
 
         queue = []
         queue.append(Node(None, self.startState, None))
