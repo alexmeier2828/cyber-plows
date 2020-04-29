@@ -11,6 +11,7 @@ class GameState:
     def __init__(self, mapPng):
         self.mapData = MapData(mapPng)
         self.mapGraph = MapGraph(mapPng)
+        self.mapGraph.parse_map()
         #mapData = self.mapData
         self.plow = Plow(self.mapData)
         #print("plow done")
@@ -41,17 +42,29 @@ class GameState:
         self.plow.currentPosition = nextPosition
         if self.mapData.mapArray[nextPosition[0]][nextPosition[1]] is TileTypes.SNOW:
             self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
-
 #creates a map representation using an image file
 class MapData:
     def __init__(self, imageFileName):
         #map conversion will happen here
-
         self.imageFileName = imageFileName
         self.mapArray = self._parseImageToArray()
 
         self.width = len(self.mapArray)
         self.height = len(self.mapArray[0])
+
+    #returns a boolean 2d array of where the snow is
+    def getSnow(self):
+        snowArray = []
+        for column in self.mapArray:
+            temp = []
+            for tile in  column:
+                if tile is TileTypes.SNOW:
+                    temp.append(True)
+                else:
+                    temp.append(False)
+            snowArray.append(temp)
+            print(snowArray)
+        return snowArray
 
     def _parseImageToArray(self):
         png = Image.open(self.imageFileName)

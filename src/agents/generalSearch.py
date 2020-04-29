@@ -18,7 +18,7 @@ def generalSearch(agent, queue_function, queue):
     nodes = queue #the type of queue will depend on the search function
     done = False
     while True:
-        if nodes.isEmpty():
+        if len(queue) is 0:
             break
         node = nodes.pop()
         if agent.isGoalState(node.s):
@@ -37,7 +37,7 @@ def pathFromNode(node):
     head = node
 
     while head is not None:
-        path.push(head.d)
-        head = head.parent
+        path.append(head.d)
+        head = head.p
 
-    return path
+    return reversed(path)
