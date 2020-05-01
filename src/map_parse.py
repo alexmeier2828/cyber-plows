@@ -23,7 +23,7 @@ start_color = (255, 255, 0)
 state_modifier = [Point(0, -1), Point(0, 1), Point(1, 0), Point(-1, 0)]
 
 #---------- Class ----------
-class MapData:
+class MapGraph:
 
   # Constructor
   def __init__(self, imageFileName):

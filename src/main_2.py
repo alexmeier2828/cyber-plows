@@ -1,13 +1,13 @@
 """
   Main Testing File for Map Parsing
 """
-from map_parse import MapData
+from map_parse import MapGraph
 
 # Main Function
 def main():
 
     file_name = "data/maps/map_5.png"
-    MapData(file_name).parse_map()
+    mapGraph(file_name).parse_map()
 
 
 if __name__ == '__main__':

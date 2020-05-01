@@ -11,7 +11,6 @@ class MapView:
         self.width = gameState.mapData.width * 32
         self.grid_height = gameState.mapData.height
         self.grid_width = gameState.mapData.width
-        print(str(self.grid_height) + "  " + str( self.grid_width))
         self.parent = parent
         self.mapCanvas = tk.Canvas(parent, bg="black" ,height=self.height, width=self.width)
 
@@ -33,11 +32,10 @@ class MapView:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.snow_sprite, anchor=tk.NE)
                 if tile is TileTypes.WALL:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.wall_sprite, anchor=tk.NE)
-                if tile is TileTypes.HOME:
+                if tile is TileTypes.HOME: 
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.home_sprite, anchor=tk.NE)
 
                 if x == gameState.plow.currentPosition[0] and y == gameState.plow.currentPosition[1]:
-                    print(str(gameState.plow.currentPosition[0]) + " " + str(gameState.plow.currentPosition[1]))
                     self.mapCanvas.create_image((x + 1)*32, (y)*32, image=self.plow_sprite, anchor=tk.NE)
         self.mapCanvas.pack()
         self.parent.update_idletasks()
