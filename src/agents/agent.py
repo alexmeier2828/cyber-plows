@@ -44,12 +44,13 @@ class  Agent:
             copy = deepcopy(state)
             direction, length = toVector(startPoint, node)
 
-            #state updates itself
-            copy.driveTo(node)
+            if length <= state.fuel:
+                #state updates itself
+                copy.driveTo(node)
 
-            #add successor to list
-            successors.append((copy, (direction, length)))
-        #should return (state, direction) pair
+                #add successor to list
+                successors.append((copy, (direction, length)))
+            #should return (state, direction) pair
         return successors
 
 

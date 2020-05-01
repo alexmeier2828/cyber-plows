@@ -25,7 +25,7 @@ class GameState:
             nextPosition = position
         elif instruction == ActionEnum.NORTH:
             if position[1] - 1 >= 0:
-                nextposition = (position[0], position[1] -1)
+                nextPosition = (position[0], position[1] -1)
 
         elif instruction == ActionEnum.EAST:
             if position[0] + 1 < self.mapData.width:
@@ -63,7 +63,6 @@ class MapData:
                 else:
                     temp.append(False)
             snowArray.append(temp)
-            print(snowArray)
         return snowArray
 
     def _parseImageToArray(self):

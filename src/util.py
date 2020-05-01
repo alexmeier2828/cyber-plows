@@ -15,10 +15,10 @@ def toVector(start, end):
     else:           #east west
         if x1 < x0:
             direction = ActionEnum.WEST
-        elif y1 > y0:
+        elif x1 > x0:
             direction = ActionEnum.EAST
 
-    distance = (x1 - x0) + (y1 - y0)
+    distance = abs((x1 - x0) + (y1 - y0))
 
     return (direction, distance)
 
@@ -31,3 +31,13 @@ def printSnow(snow):
             else:
                 string = string + "."
         print(string)
+
+
+def vectorListToSingleSteps(vectors):
+    print(vectors)
+    dlist = []
+    for vector in vectors:
+        direction, length = vector
+        for step in range(0, length):
+            dlist.append(direction)
+    return dlist

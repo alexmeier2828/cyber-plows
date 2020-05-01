@@ -14,14 +14,16 @@ class Game:
         print("Starting game loop...")
 
         i = 0;
-        currentInstruction = ActionEnum.WAIT
+
 
         #main loop
         while not self.gameState.done:
+            currentInstruction = ActionEnum.WAIT
             self.time = self.time + 1 #increase time counter
 
             if i < len(self.plowInstructions):
                 currentInstruction = self.plowInstructions[i]
+                print(currentInstruction)
             i = i + 1
 
             #move plow
