@@ -1,9 +1,11 @@
 from enum import Enum
+from collections import namedtuple
+
 import numpy as np
+
 from PIL import Image
 import networkx as nx
 import matplotlib.pyplot as plt
-from collections import namedtuple
 
 #---------- Globals ----------
 class ACTION_ENUM(Enum):
