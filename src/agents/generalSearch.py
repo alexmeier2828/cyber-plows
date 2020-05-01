@@ -6,6 +6,7 @@ class Node:
         self.s = state
         self.d = direction
     def expand(self, agent):
+        agent.increaseNodeCount();
         newNodes = []
         successors = agent.getSuccessors(self.s)
         if successors is None:

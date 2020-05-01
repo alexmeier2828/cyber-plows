@@ -15,17 +15,17 @@ def main():
     top = tk.Tk()
 
 
-    gameState = GameState("../data/maps/map_2.png") #TODO pass in an actual map PNG
+    gameState = GameState("../data/maps/map_1.png") #TODO pass in an actual map PNG
     print(gameState.mapGraph.map_graph)
     startPoint = list(gameState.mapGraph.get_map())[0]
-    test_agent = agent.bfsAgent(gameState)
+    test_agent = agent.dfsAgent(gameState)
     directions = test_agent.generatePath()
     for d in directions:
         print(d)
 
-
+    print("Expaned " + str(test_agent.getCompletionDetails()) + " nodes")
     mapView = MapView(top, gameState)
-    print(util.vectorListToSingleSteps(directions))
+    #print(util.vectorListToSingleSteps(directions))
     #demoInstrutions = [ActionEnum.EAST, ActionEnum.EAST, ActionEnum.WEST, ActionEnum.NORTH, ActionEnum.WEST, ActionEnum.SOUTH, ActionEnum.WAIT]
     game = Game(gameState, util.vectorListToSingleSteps(directions), mapView)
 
@@ -34,5 +34,8 @@ def main():
 
 
     game.gameLoop()
+
+
+
 if __name__ == '__main__':
     main()
