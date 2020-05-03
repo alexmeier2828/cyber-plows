@@ -28,7 +28,7 @@ state_modifier = [Point(0, -1), Point(0, 1), Point(1, 0), Point(-1, 0)]
 class MapGraph:
 
   # Constructor
-  def __init__(self, imageFileName):
+  def __init__(self, imageFileName, showDebugGraph = False):
     #### Public Vars ####
     self.image_file_name = imageFileName
     self.width = None
@@ -41,7 +41,7 @@ class MapGraph:
 
     self.__debug_stack = False
     self.__debug_graph = True
-    self.__debug_graph_gui = True
+    self.__debug_graph_gui = showDebugGraph
 
     self.__max_stack_size = -1
     self.__set_size = -1
