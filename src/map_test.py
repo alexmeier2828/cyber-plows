@@ -6,8 +6,9 @@ from map_parse import MapGraph
 # Main Function
 def main():
 
-    file_name = "data/maps/map_5.png"
-    mapGraph(file_name).parse_map()
+    file_name = "data/maps/map_2.png"
+    #file_name = "data/maps/map_5.png"
+    MapGraph(file_name).parse_map()
 
 
 if __name__ == '__main__':
