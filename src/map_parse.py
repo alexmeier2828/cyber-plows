@@ -37,7 +37,7 @@ class MapGraph:
 
     ##### Private Vars ####
     self.__start_flag = -1
-    #self.__start_point = None
+    self.__start_state = None
 
     self.__debug_stack = False
     self.__debug_graph = True
@@ -54,6 +54,9 @@ class MapGraph:
   def get_map(self):
     return self.map_graph
 
+  def get_start_point(self):
+    return self.__start_state.point
+
   #Runs Map Parsinf
   def parse_map(self):
     # Prepare main Data
@@ -61,10 +64,10 @@ class MapGraph:
 
     # Get starting state
     # TODO: make this an init var instead
-    start_state = self.__find_start(img)
+    self.__start_state = self.__find_start(img)
 
     # Prepare data structures for graphing
-    stack = [start_state]
+    stack = [self.__start_state]
     visited_states = set()
 
     # Prepare loop globals (for counting)

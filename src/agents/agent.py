@@ -1,7 +1,7 @@
 """
 this file is a base class for all agent classes and should not be instantiated
-
 """
+
 from collections import deque
 from copy import deepcopy
 from agents.generalSearch import *
@@ -11,7 +11,7 @@ from util import toVector
 class  Agent:
     def __init__(self, gameState):
         #stuff that is common to all agents goes here
-        self.startState = AgentState(gameState)
+        self.startState = AgentState(agentParams, gameState)
         self.mapGraph = gameState.mapGraph.map_graph
 
 

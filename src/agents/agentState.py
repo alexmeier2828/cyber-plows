@@ -4,11 +4,11 @@ from util import toVector, printSnow
 class AgentState:
     def __init__(self, gameState=None):
         if gameState is not None:
-            self.location = list(gameState.mapGraph.get_map())[0] #TODO this is a gross way of doing this
-            self.fuel = gameState.plow.fuel
-            self.salt = gameState.plow.salt
-            self.snow = deepcopy(gameState.mapData.getSnow())
+            self.location = gameState.mapGraph.get_start_point()
             self.home = self.location
+            self.snow = deepcopy(gameState.mapData.getSnow())
+            self.fuel, self.salt = gameState.agentParams
+            self.fuel_capacity, self.salt_capacity = gameState.agentParams
         else:
             self.location = None
             self.fuel = None
@@ -21,13 +21,12 @@ class AgentState:
         #iterate state
         self._updateSnow(self.location, endPoint)
         if endPoint == self.home:
-            self.fuel = 20  #this should be set by a variable somewhere
-            self.salt = 20
+            self.fuel = self.fuel_capacity
+            self.salt = self.salt_capacity
         else:
             self.fuel = self.fuel - length
             self.salt = self.salt - length #this should be how much snow was cleaned but well do that later
         self.location = endPoint
-
 
         #self.salt = amount of snow cleaned
 

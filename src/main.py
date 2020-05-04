@@ -14,10 +14,11 @@ import util
 def main():
     top = tk.Tk()
 
-
-    gameState = GameState("../data/maps/map_2.png") #TODO pass in an actual map PNG
+    # (fuel, salt)
+    agentParams = (20, 20)
+    gameState = GameState("../data/maps/map_1.png", agentParams) #TODO pass in an actual map PNG
     print(gameState.mapGraph.map_graph)
-    startPoint = list(gameState.mapGraph.get_map())[0]
+
     test_agent = agent.bfsAgent(gameState)
     directions = test_agent.generatePath()
     for d in directions:
@@ -28,9 +29,6 @@ def main():
     print(util.vectorListToSingleSteps(directions))
     #demoInstrutions = [ActionEnum.EAST, ActionEnum.EAST, ActionEnum.WEST, ActionEnum.NORTH, ActionEnum.WEST, ActionEnum.SOUTH, ActionEnum.WAIT]
     game = Game(gameState, util.vectorListToSingleSteps(directions), mapView)
-
-
-
 
 
     game.gameLoop()

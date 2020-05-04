@@ -9,14 +9,18 @@ from map_parse import MapGraph
 
 class GameState:
     def __init__(self, mapPng):
-        self.mapData = MapData(mapPng)
+        # Mapping
         self.mapGraph = MapGraph(mapPng)
         self.mapGraph.parse_map()
-        #mapData = self.mapData
-        self.plow = Plow(self.mapData)
-        #print("plow done")
+
+        # Searching
+        self.agentParams = agentParams
         self.done = False
         self.score = 0
+
+        # GUI
+        self.mapData = MapData(mapPng)
+        self.plow = Plow(self.mapData)
 
     def movePlow(self, instruction):
         position = self.plow.currentPosition
@@ -35,7 +39,7 @@ class GameState:
             if position[1] + 1 < self.mapData.height:
                 nextPosition = (position[0], position[1] +1)
 
-        else: #we are going west
+        else: #ActionEnum.WEST
             if position[0] - 1 >= 0:
                 nextPosition = (position[0] -1, position[1])
 
@@ -66,10 +70,9 @@ class MapData:
         return snowArray
 
     def _parseImageToArray(self):
-        png = Image.open(self.imageFileName)
-        pixels = png.convert('RGB')
-        width = pixels.size[0]
-        height = pixels.size[1]
+        img = Image.open(self.imageFileName).convert('RGB')
+        width = img.size[0]
+        height = img.size[1]
         mapList = []
 
         #initialize to walls
@@ -82,8 +85,7 @@ class MapData:
 
         for x in range(0, width):
             for y in range(0, height):
-                #print(pixels.getpixel((x, y)))
-                r,g,b = pixels.getpixel((x,y))
+                r,g,b = img.getpixel((x,y))
                 if r == 0 and g == 0 and b == 0:
                     mapList[x][y] = TileTypes.SNOW
                 if r != 0 and g != 0 and b == 0:
@@ -93,17 +95,14 @@ class MapData:
 #Class holds variables for the plow, including homebase, current location, available actions, next positions, salt, and fuel.
 class Plow:
     def __init__(self, mapData):
-        self.fuel = 20 #dummy value
-        self.salt = 20 #dummy value
-
         self.homeBase = self.findStart(mapData) #Find the position of the home base.
         self.currentPosition = self.homeBase    #At the start, the plow's position is at home base.
         self.actions = self.getActions(self.currentPosition, mapData)
         self.nextPosition = self.getNextPosition(self.currentPosition, mapData)
 
+
         # #enter a position to see how Plow changes based on that position.
         # random_position = (3,3)
-
 
 
         self.currentPosition = self.homeBase
