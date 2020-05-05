@@ -9,20 +9,25 @@ class AgentState:
             self.salt = 40
             self.snow = deepcopy(gameState.mapData.getSnow())
             self.home = self.location
+            self.snow = deepcopy(gameState.mapData.getSnow())
+            self.fuel, self.salt = gameState.agentParams
+            self.fuel_capacity, self.salt_capacity = gameState.agentParams
         else:
             self.location = None
             self.fuel = None
             self.salt = None
             self.snow = None
             self.home = None
+            self.fuel_capacity = 0
+            self.salt_capacity = 0
 
     def driveTo(self, endPoint):
         direction, length = toVector(self.location, endPoint)
         #iterate state
         self._updateSnow(self.location, endPoint)
         if endPoint == self.home:
-            self.fuel = 40  #this should be set by a variable somewhere
-            self.salt = 40
+            self.fuel = self.fuel_capacity
+            self.salt = self.salt_capacity
         else:
             self.fuel = self.fuel - length
             self.salt = self.salt - length #this should be how much snow was cleaned but well do that later
@@ -56,6 +61,8 @@ class AgentState:
         copy.salt = self.salt
         copy.snow = deepcopy(self.snow)
         copy.home = self.home
+        copy.fuel_capacity = self.fuel_capacity
+        copy.salt_capacity = self.salt_capacity
         return copy
 
 

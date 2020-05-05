@@ -41,6 +41,7 @@ class Game:
 
 
         score = self.fuelUsed #need to figure out score
+
         if self.failed:
             score = score + 1000
         score = 1.0/(score + 1)

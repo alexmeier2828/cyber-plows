@@ -1,7 +1,7 @@
 """
 this file is a base class for all agent classes and should not be instantiated
-
 """
+
 from collections import deque
 from copy import deepcopy
 from agents.generalSearch import *

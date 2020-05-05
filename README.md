@@ -20,11 +20,10 @@ The agent is given limited gas (must refuel at base) and can must relocate snow.
 
 ### Dependencies
 
+Dependencies are located in src/requirements.txt
+
 ```
-- numpy
-- pillow (PIL)
-- networkx
-- matplotlib
+pip install -r requirements.txt
 ```
 
 ## How to use

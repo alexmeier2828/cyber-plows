@@ -20,19 +20,19 @@ class Result:
 def runExperiment(map, top, showGUI=False):
     results = {}
     runs = []
-    gameState = GameState(map)
+    gameState = GameState(map, (40, 40))
     startPoints = gameState.getValidStartPoints()
     for location in startPoints:
 
 
         #create agents
-        gameStateDFS = GameState(map)
+        gameStateDFS = GameState(map, (40, 40))
         gameStateDFS.setStartPoint(location)
         dfs = agents.dfsAgent(gameStateDFS)
- 
+
 
         #bfs
-        gameStateBFS = GameState(map)
+        gameStateBFS = GameState(map, (40, 40))
         gameStateBFS.setStartPoint(location)
         bfs = agents.bfsAgent(gameStateBFS)
 
