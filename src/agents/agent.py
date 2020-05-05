@@ -11,8 +11,9 @@ from util import toVector
 class  Agent:
     def __init__(self, gameState):
         #stuff that is common to all agents goes here
-        self.startState = AgentState(agentParams, gameState)
+        self.startState = AgentState(gameState)
         self.mapGraph = gameState.mapGraph.map_graph
+        self.nodesExpanded = 0
 
 
     """ tion, so dont try to
@@ -31,7 +32,9 @@ class  Agent:
             for row in col:
                 if row:
                     return False
-        return True
+
+
+        return (state.location == state.home)
 
     #takes an AgentState
     def getSuccessors(self, state):
@@ -53,6 +56,13 @@ class  Agent:
             #should return (state, direction) pair
         return successors
 
+    #iterates the node expansion count, do not overload
+    def increaseNodeCount(self):
+        self.nodesExpanded = self.nodesExpanded + 1
+
+    #should return how the agent did
+    def getCompletionDetails(self):
+        return self.nodesExpanded
 
 class dfsAgent(Agent):
     def __init__(self, startState):

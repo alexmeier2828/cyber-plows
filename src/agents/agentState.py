@@ -4,7 +4,10 @@ from util import toVector, printSnow
 class AgentState:
     def __init__(self, gameState=None):
         if gameState is not None:
-            self.location = gameState.mapGraph.get_start_point()
+            self.location = gameState.startPoint #TODO this is a gross way of doing this
+            self.fuel = 40
+            self.salt = 40
+            self.snow = deepcopy(gameState.mapData.getSnow())
             self.home = self.location
             self.snow = deepcopy(gameState.mapData.getSnow())
             self.fuel, self.salt = gameState.agentParams
@@ -15,6 +18,8 @@ class AgentState:
             self.salt = None
             self.snow = None
             self.home = None
+            self.fuel_capacity = 0
+            self.salt_capacity = 0
 
     def driveTo(self, endPoint):
         direction, length = toVector(self.location, endPoint)
@@ -28,11 +33,14 @@ class AgentState:
             self.salt = self.salt - length #this should be how much snow was cleaned but well do that later
         self.location = endPoint
 
+    def __str__(self):
+        return str(self.location) + str(self.fuel) + str(self.salt) + str(self.snow)
+
         #self.salt = amount of snow cleaned
 
     #erases the snow that the plow passes through
     def _updateSnow(self, start, end):
-        printSnow(self.snow)
+        #printSnow(self.snow)
         x0, y0 = start
         x1, y1 = end
         if y0 == y1:    #east west
@@ -53,6 +61,8 @@ class AgentState:
         copy.salt = self.salt
         copy.snow = deepcopy(self.snow)
         copy.home = self.home
+        copy.fuel_capacity = self.fuel_capacity
+        copy.salt_capacity = self.salt_capacity
         return copy
 
 

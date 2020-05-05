@@ -8,19 +8,27 @@ from PIL import Image
 from map_parse import MapGraph
 
 class GameState:
-    def __init__(self, mapPng):
+    def __init__(self, mapPng, agentParams):
         # Mapping
         self.mapGraph = MapGraph(mapPng)
         self.mapGraph.parse_map()
+        self.startPoint = list(self.mapGraph.get_map())[0]
 
-        # Searching
+        #searching
         self.agentParams = agentParams
         self.done = False
         self.score = 0
 
-        # GUI
+        #GUI
         self.mapData = MapData(mapPng)
         self.plow = Plow(self.mapData)
+        self.plow.currentPosition = self.startPoint
+    def getValidStartPoints(self):
+        return list(self.mapGraph.get_map())
+
+    def setStartPoint(self, point):
+        self.startPoint = point
+        self.plow.currentPosition = self.startPoint
 
     def movePlow(self, instruction):
         position = self.plow.currentPosition
