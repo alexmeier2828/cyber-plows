@@ -81,5 +81,15 @@ def runExperiment(map, top, showGUI=False):
     #print results
     for type in results.keys():
         print("Type: " + type)
+        averageExpanded = 0
+        averageScore = 0
+        total = 0
         for result in results[type]:
+            averageScore += result.score
+            averageExpanded += result.nodesExpanded
+            total += 1
             print(result)
+
+        averageExpanded = averageExpanded / total
+        averageScore = averageScore / total
+        print("Average Score: " + str(averageScore) + " Average Expanded: " + str(averageExpanded))

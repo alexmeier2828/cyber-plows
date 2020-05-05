@@ -23,6 +23,9 @@ class GameState:
         self.mapData = MapData(mapPng)
         self.plow = Plow(self.mapData)
         self.plow.currentPosition = self.startPoint
+        self.fuel = agentParams[0]
+        self.salt = agentParams[1]
+
     def getValidStartPoints(self):
         return list(self.mapGraph.get_map())
 
@@ -50,10 +53,16 @@ class GameState:
         else: #ActionEnum.WEST
             if position[0] - 1 >= 0:
                 nextPosition = (position[0] -1, position[1])
-
+        self.fuel -= 1
         self.plow.currentPosition = nextPosition
         if self.mapData.mapArray[nextPosition[0]][nextPosition[1]] is TileTypes.SNOW:
-            self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
+            if self.fuel > 0:
+                self.salt -= 1
+                self.mapData.mapArray[nextPosition[0]][nextPosition[1]] = TileTypes.ROAD
+        start = self.plow.findStart(self.mapData)
+        if(self.plow.currentPosition[0] != start[0] and self.plow.currentPosition[1] != start[1]):
+            self.fuel = self.agentParams[0]
+            self.salt = self.agentParams[1]
 #creates a map representation using an image file
 class MapData:
     def __init__(self, imageFileName):

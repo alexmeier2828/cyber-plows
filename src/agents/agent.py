@@ -34,8 +34,8 @@ class  Agent:
                     return False
 
 
-        return (state.location == state.home)
-
+        return (state.location[0] == state.home[0] and state.location[1] == state.home[1])
+ 
     #takes an AgentState
     def getSuccessors(self, state):
         #returns a list of successor states

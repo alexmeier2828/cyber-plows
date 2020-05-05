@@ -21,7 +21,6 @@ class Game:
 
         #main loop
         while not isGameOver(self.gameState, self):
-            print(self.time)
             currentInstruction = ActionEnum.WAIT
             self.time = self.time + 1 #increase time counter
 
@@ -40,16 +39,18 @@ class Game:
                 time.sleep(0.01)
 
 
-        score = self.fuelUsed #need to figure out score
+        score = -self.fuelUsed #need to figure out score
 
         if self.failed:
-            score = score + 1000
-        score = 1.0/(score + 1)
+            score = score - 1000
+        #score = 1.0/(score + 1)
         return score
 
 
 def isGameOver(gameState, game):
-    if game.time > 300:
+    print(gameState.plow.findStart(gameState.mapData))
+    print(gameState.plow.currentPosition)
+    if game.time > 1000:
         game.failed = True
         return True
     snow = gameState.mapData.getSnow()
@@ -57,5 +58,10 @@ def isGameOver(gameState, game):
         for row in col:
             if row:
                 return False
+
+    start = gameState.plow.findStart(gameState.mapData)
+    if(gameState.plow.currentPosition[0] != start[0] and gameState.plow.currentPosition[1] != start[1]):
+        return False
+
 
     return True

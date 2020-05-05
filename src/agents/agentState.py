@@ -8,10 +8,11 @@ class AgentState:
             self.fuel = 40
             self.salt = 40
             self.snow = deepcopy(gameState.mapData.getSnow())
-            self.home = self.location
+            self.home = list(gameState.mapGraph.get_map())[0]
             self.snow = deepcopy(gameState.mapData.getSnow())
             self.fuel, self.salt = gameState.agentParams
             self.fuel_capacity, self.salt_capacity = gameState.agentParams
+
         else:
             self.location = None
             self.fuel = None
@@ -24,13 +25,12 @@ class AgentState:
     def driveTo(self, endPoint):
         direction, length = toVector(self.location, endPoint)
         #iterate state
-        self._updateSnow(self.location, endPoint)
+        snowPlowed = self._updateSnow(self.location, endPoint)
         if endPoint == self.home:
             self.fuel = self.fuel_capacity
             self.salt = self.salt_capacity
         else:
             self.fuel = self.fuel - length
-            self.salt = self.salt - length #this should be how much snow was cleaned but well do that later
         self.location = endPoint
 
     def __str__(self):
@@ -41,16 +41,24 @@ class AgentState:
     #erases the snow that the plow passes through
     def _updateSnow(self, start, end):
         #printSnow(self.snow)
+        count = 0
         x0, y0 = start
         x1, y1 = end
         if y0 == y1:    #east west
             for i in range(min(x0, x1),max(x0, x1) + 1):
-                self.snow[i][y0] = False
+                if self.snow[i][y0] and self.salt > 0:
+                    count += 1
+                    self.salt -= 1
+                    self.snow[i][y0] = False
                 #print("erasing Snow east west")
         if x0 == x1:    #north south
             for i in range(min(y0, y1),max(y0, y1) + 1):
-                self.snow[x0][i] = False
+                if self.snow[x0][i] and self.salt > 0:
+                    count += 1
+                    self.salt -= 1
+                    self.snow[x0][i] = False
                 #print("erasing Snow north south")
+        return count
 
 
 

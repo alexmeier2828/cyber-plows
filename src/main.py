@@ -36,7 +36,7 @@ def main():
     #
     # game.gameLoop()
 
-    experiment.runExperiment("../data/maps/map_2.png", top, showGUI=True)
+    experiment.runExperiment("../data/maps/map_2.png", top, showGUI=False)
 
 
 
