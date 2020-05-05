@@ -32,7 +32,7 @@ class MapView:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.snow_sprite, anchor=tk.NE)
                 if tile is TileTypes.WALL:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.wall_sprite, anchor=tk.NE)
-                if tile is TileTypes.HOME: 
+                if tile is TileTypes.HOME:
                     self.mapCanvas.create_image((x+1)*32, (y)*32, image=self.home_sprite, anchor=tk.NE)
 
                 if x == gameState.plow.currentPosition[0] and y == gameState.plow.currentPosition[1]:

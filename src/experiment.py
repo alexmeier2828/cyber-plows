@@ -59,14 +59,14 @@ def runExperiment(map, top, showGUI=False):
         runs.append((gameStateDLS, dls, "dls"))
 
 
-
+    mapView = MapView(top, gameState)
     #start Runs
     for run in runs:
         gameState, agent, type = run
         print("Running a " + type + "run...")
         path = agent.generatePath()
 
-        mapView = MapView(top, gameState)
+
         game = Game(gameState, util.vectorListToSingleSteps(path), mapView)
         score = game.gameLoop(showGUI=showGUI)
 

@@ -106,12 +106,12 @@ class aStarAgent(Agent):
 
         def queue_function(pQueue, newNodes, problem):
             for n in newNodes:
-                value = heuristic(n.s)
+                value = betterHeuristic(n.s)
                 pQueue.push(n, value)
 
 
         queue = PriorityQueue()
-        queue.push(Node(None, self.startState, None), heuristic(self.startState))
+        queue.push(Node(None, self.startState, None), betterHeuristic(self.startState))
 
         result = generalSearch(self, queue_function, queue)
         return result
@@ -125,16 +125,30 @@ def heuristic(agentState):
         for y in x:
             if y:
                 count = count + 1
-    if count > 0:
-        count = 1 / count
     return count
 
-
+def betterHeuristic(agentState):
+    aX, aY = agentState.location
+    homeX, homeY = agentState.home
+    distanceToHome = abs(aX - homeX + aY - homeY)
+    if distanceToHome > 0.5 * agentState.fuel:
+        return distanceToHome
+    else:
+        #greedy
+        shortestDistance = float("inf")
+        width = len(agentState.snow)
+        height = len(agentState.snow[0])
+        for x in range(0, width):
+            for y in range(0, height):
+                dist = abs(aX - x + aY - y)
+                shortestDistance = min(shortestDistance, dist)
+        return shortestDistance
 
 class dlsAgent(Agent):
     def __init__(self, startState, cutoff=100):
         super().__init__(startState)
         self.cutoff = cutoff
+
 
     def generatePath(self):
         def queue_function(nodes, newNodes, problem):
