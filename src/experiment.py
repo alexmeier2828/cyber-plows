@@ -42,6 +42,12 @@ def runExperiment(map, top, showGUI=False):
         gameStateBFS.setStartPoint(location)
         bfs = agents.bfsAgent(gameStateBFS)
 
+        #dls
+        gameStateDLS = GameState(map, (40, 40))
+        gameStateDLS.setStartPoint(location)
+        dls = agents.dlsAgent(gameStateDLS, 100)
+
+
 
 
 
@@ -50,6 +56,7 @@ def runExperiment(map, top, showGUI=False):
         runs.append((gameStateAStar, astar, "A-star"))
         runs.append((gameStateDFS, dfs, "dfs"))
         runs.append((gameStateBFS, bfs, "bfs"))
+        runs.append((gameStateDLS, dls, "dls"))
 
 
 

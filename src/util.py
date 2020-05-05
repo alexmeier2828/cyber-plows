@@ -51,7 +51,7 @@ class PriorityQueue():
         self.counter = 0
     def push(self,item, value):
         print(str(item) + " " + str(value))
-        heapq.heappush(self.heap, (value * -1, self.counter, item)) #use -1 to make the heap a max heap
+        heapq.heappush(self.heap, (value , self.counter, item))
         self.counter += 1
     def pop(self):
         return self.heap.pop()[2]

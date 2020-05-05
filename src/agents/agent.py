@@ -128,3 +128,21 @@ def heuristic(agentState):
     if count > 0:
         count = 1 / count
     return count
+
+
+
+class dlsAgent(Agent):
+    def __init__(self, startState, cutoff=100):
+        super().__init__(startState)
+        self.cutoff = cutoff
+
+    def generatePath(self):
+        def queue_function(nodes, newNodes, problem):
+            for n in newNodes:
+                nodes.append(n)
+
+        stack = deque()
+        stack.append(DepthNode(None, self.startState, None, 0))
+
+        result = limitedGeneralSearch(self, queue_function, stack, self.cutoff)
+        return result
