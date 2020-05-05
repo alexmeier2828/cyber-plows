@@ -6,7 +6,7 @@ from collections import deque
 from copy import deepcopy
 from agents.generalSearch import *
 from agents.agentState import AgentState
-from util import toVector
+from util import toVector, PriorityQueue
 
 class  Agent:
     def __init__(self, gameState):
@@ -96,3 +96,35 @@ class bfsAgent(Agent):
 
         result = generalSearch(self, queue_function, queue)
         return result
+
+
+class aStarAgent(Agent):
+    def __init__(self, startState):
+        super().__init__(startState)
+
+    def generatePath(self):
+
+        def queue_function(pQueue, newNodes, problem):
+            for n in newNodes:
+                value = heuristic(n.s)
+                pQueue.push(n, value)
+
+
+        queue = PriorityQueue()
+        queue.push(Node(None, self.startState, None), heuristic(self.startState))
+
+        result = generalSearch(self, queue_function, queue)
+        return result
+
+#for now the heuristic is hust the count of how much snow is left,
+#probably not a super efficient heuristic
+def heuristic(agentState):
+    snow = agentState.snow
+    count = 0
+    for x in snow:
+        for y in x:
+            if y:
+                count = count + 1
+    if count > 0:
+        count = 1 / count
+    return count

@@ -1,3 +1,4 @@
+import heapq
 from state import ActionEnum
 """
     Return a vector (direction, length) from two points
@@ -41,3 +42,18 @@ def vectorListToSingleSteps(vectors):
         for step in range(0, length):
             dlist.append(direction)
     return dlist
+
+
+
+class PriorityQueue():
+    def __init__(self):
+        self.heap = []
+        self.counter = 0
+    def push(self,item, value):
+        print(str(item) + " " + str(value))
+        heapq.heappush(self.heap, (value * -1, self.counter, item)) #use -1 to make the heap a max heap
+        self.counter += 1
+    def pop(self):
+        return self.heap.pop()[2]
+    def __len__(self):
+        return len(self.heap)
