@@ -24,8 +24,14 @@ def runExperiment(map, top, showGUI=False):
     startPoints = gameState.getValidStartPoints()
     for location in startPoints:
 
+        #aStar
+        gameStateAStar = GameState(map, (40, 40))
+        gameStateAStar.setStartPoint(location)
+        astar = agents.aStarAgent(gameStateAStar)
 
-        #create agents
+
+
+        #dfs
         gameStateDFS = GameState(map, (40, 40))
         gameStateDFS.setStartPoint(location)
         dfs = agents.dfsAgent(gameStateDFS)
@@ -41,8 +47,10 @@ def runExperiment(map, top, showGUI=False):
 
 
         #add to Runs
+        runs.append((gameStateAStar, astar, "A-star"))
         runs.append((gameStateDFS, dfs, "dfs"))
         runs.append((gameStateBFS, bfs, "bfs"))
+
 
 
     #start Runs
