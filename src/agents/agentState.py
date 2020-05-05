@@ -4,9 +4,9 @@ from util import toVector, printSnow
 class AgentState:
     def __init__(self, gameState=None):
         if gameState is not None:
-            self.location = list(gameState.mapGraph.get_map())[0] #TODO this is a gross way of doing this
-            self.fuel = gameState.plow.fuel
-            self.salt = gameState.plow.salt
+            self.location = gameState.startPoint #TODO this is a gross way of doing this
+            self.fuel = 40
+            self.salt = 40
             self.snow = deepcopy(gameState.mapData.getSnow())
             self.home = self.location
         else:
@@ -21,19 +21,21 @@ class AgentState:
         #iterate state
         self._updateSnow(self.location, endPoint)
         if endPoint == self.home:
-            self.fuel = 20  #this should be set by a variable somewhere
-            self.salt = 20
+            self.fuel = 40  #this should be set by a variable somewhere
+            self.salt = 40
         else:
             self.fuel = self.fuel - length
             self.salt = self.salt - length #this should be how much snow was cleaned but well do that later
         self.location = endPoint
 
+    def __str__(self):
+        return str(self.location) + str(self.fuel) + str(self.salt) + str(self.snow)
 
         #self.salt = amount of snow cleaned
 
     #erases the snow that the plow passes through
     def _updateSnow(self, start, end):
-        printSnow(self.snow)
+        #printSnow(self.snow)
         x0, y0 = start
         x1, y1 = end
         if y0 == y1:    #east west

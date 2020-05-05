@@ -12,11 +12,20 @@ class GameState:
         self.mapData = MapData(mapPng)
         self.mapGraph = MapGraph(mapPng)
         self.mapGraph.parse_map()
+        self.startPoint = list(self.mapGraph.get_map())[0]
         #mapData = self.mapData
         self.plow = Plow(self.mapData)
+        self.plow.currentPosition = self.startPoint
         #print("plow done")
         self.done = False
         self.score = 0
+
+    def getValidStartPoints(self):
+        return list(self.mapGraph.get_map())
+
+    def setStartPoint(self, point):
+        self.startPoint = point
+        self.plow.currentPosition = self.startPoint
 
     def movePlow(self, instruction):
         position = self.plow.currentPosition

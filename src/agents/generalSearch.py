@@ -1,5 +1,5 @@
 """this file contains the general search function from the textbook"""
-
+import util
 class Node:
     def __init__(self, parent, state, direction):
         self.p = parent
@@ -16,12 +16,14 @@ class Node:
         return newNodes
 
 
+
 #the graph search algorithm from the book
 def generalSearch(agent, queue_function, queue):
     visited = {}
     nodes = queue #the type of queue will depend on the search function
     done = False
     while True:
+
         if len(queue) is 0:
             break
         node = nodes.pop()

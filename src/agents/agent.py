@@ -32,7 +32,9 @@ class  Agent:
             for row in col:
                 if row:
                     return False
-        return True
+
+
+        return (state.location == state.home)
 
     #takes an AgentState
     def getSuccessors(self, state):
