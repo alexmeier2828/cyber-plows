@@ -17,8 +17,8 @@ class Result:
         + " Nodes Expanded: " + str(self.nodesExpanded));
 
 
-def runExperiment(map, top, showGUI=False):
-    results = {}
+def runExperiment(map, top, results, showGUI=False):
+    results = results
     runs = []
     gameState = GameState(map, (40, 40))
     startPoints = gameState.getValidStartPoints()
@@ -53,7 +53,7 @@ def runExperiment(map, top, showGUI=False):
 
 
         #add to Runs
-        runs.append((gameStateAStar, astar, "A-star"))
+        runs.append((gameStateAStar, astar, "astar"))
         runs.append((gameStateDFS, dfs, "dfs"))
         runs.append((gameStateBFS, bfs, "bfs"))
         runs.append((gameStateDLS, dls, "dls"))
@@ -77,19 +77,4 @@ def runExperiment(map, top, showGUI=False):
         else:
             results[type] = [result]
 
-
-    #print results
-    for type in results.keys():
-        print("Type: " + type)
-        averageExpanded = 0
-        averageScore = 0
-        total = 0
-        for result in results[type]:
-            averageScore += result.score
-            averageExpanded += result.nodesExpanded
-            total += 1
-            print(result)
-
-        averageExpanded = averageExpanded / total
-        averageScore = averageScore / total
-        print("Average Score: " + str(averageScore) + " Average Expanded: " + str(averageExpanded))
+    return results

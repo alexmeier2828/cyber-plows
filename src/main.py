@@ -8,6 +8,7 @@ from game import Game
 import agents.agent as agent
 import experiment
 import util
+import json
 
 #main function
 
@@ -36,8 +37,37 @@ def main():
     #
     # game.gameLoop()
 
-    experiment.runExperiment("../data/maps/map_2.png", top, showGUI=False)
+    results = experiment.runExperiment("../data/maps/map_1.png", top, {},  showGUI=False)
+    results = experiment.runExperiment("../data/maps/map_2.png", top, results,  showGUI=False)
+    results = experiment.runExperiment("../data/maps/map_3.png", top, results,  showGUI=False)
 
+    dict_results = {
+        "score": {"astar": [], "dfs":[], "bfs":[], "dls":[]},
+        "nodes": {"astar": [], "dfs":[], "bfs":[], "dls":[]}
+    }
+    #print results
+    for type in results.keys():
+        print("Type: " + type)
+        averageExpanded = 0
+        averageScore = 0
+        total = 0
+
+        for result in results[type]:
+            averageScore += result.score
+            averageExpanded += result.nodesExpanded
+            total += 1
+            print(result)
+
+            dict_results["score"][type].append(result.score)
+            dict_results["nodes"][type].append(result.nodesExpanded)
+
+        averageExpanded = averageExpanded / total
+        averageScore = averageScore / total
+
+        print("Average Score: " + str(averageScore) + " Average Expanded: " + str(averageExpanded))
+
+        with open('data.json', 'w', newline='\n') as jsonfile:
+            jsonfile.write(json.dumps(dict_results))
 
 
 if __name__ == '__main__':
