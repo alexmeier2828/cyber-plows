@@ -37,14 +37,15 @@ def main():
     #
     # game.gameLoop()
 
-    results = experiment.runExperiment("../data/maps/map_1.png", top, {},  showGUI=False)
-    results = experiment.runExperiment("../data/maps/map_2.png", top, results,  showGUI=False)
-    results = experiment.runExperiment("../data/maps/map_3.png", top, results,  showGUI=False)
+    results = experiment.runExperiment("../data/maps/map_1.png", top, {},  showGUI=True)
+    results = experiment.runExperiment("../data/maps/map_2.png", top, results,  showGUI=True)
+    results = experiment.runExperiment("../data/maps/map_3.png", top, results,  showGUI=True)
 
     dict_results = {
         "score": {"astar": [], "dfs":[], "bfs":[], "dls":[]},
         "nodes": {"astar": [], "dfs":[], "bfs":[], "dls":[]}
     }
+
     #print results
     for type in results.keys():
         print("Type: " + type)

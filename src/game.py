@@ -39,7 +39,7 @@ class Game:
                 time.sleep(0.01)
 
 
-        score = -self.fuelUsed #need to figure out score
+        score = -self.fuelUsed - (5*self.gameState.refils)
 
         if self.failed:
             score = score - 1000

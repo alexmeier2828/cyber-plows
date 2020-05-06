@@ -18,6 +18,7 @@ class GameState:
         self.agentParams = agentParams
         self.done = False
         self.score = 0
+        self.refils = 0
 
         #GUI
         self.mapData = MapData(mapPng)
@@ -63,6 +64,7 @@ class GameState:
         if(self.plow.currentPosition[0] != start[0] and self.plow.currentPosition[1] != start[1]):
             self.fuel = self.agentParams[0]
             self.salt = self.agentParams[1]
+            self.refils += 1
 #creates a map representation using an image file
 class MapData:
     def __init__(self, imageFileName):

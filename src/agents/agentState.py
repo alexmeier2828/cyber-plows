@@ -25,7 +25,7 @@ class AgentState:
     def driveTo(self, endPoint):
         direction, length = toVector(self.location, endPoint)
         #iterate state
-        snowPlowed = self._updateSnow(self.location, endPoint)
+        self._updateSnow(self.location, endPoint)
         if endPoint == self.home:
             self.fuel = self.fuel_capacity
             self.salt = self.salt_capacity
@@ -47,18 +47,15 @@ class AgentState:
         if y0 == y1:    #east west
             for i in range(min(x0, x1),max(x0, x1) + 1):
                 if self.snow[i][y0] and self.salt > 0:
-                    count += 1
                     self.salt -= 1
                     self.snow[i][y0] = False
                 #print("erasing Snow east west")
-        if x0 == x1:    #north south
+        elif x0 == x1:    #north south
             for i in range(min(y0, y1),max(y0, y1) + 1):
                 if self.snow[x0][i] and self.salt > 0:
-                    count += 1
                     self.salt -= 1
                     self.snow[x0][i] = False
                 #print("erasing Snow north south")
-        return count
 
 
 

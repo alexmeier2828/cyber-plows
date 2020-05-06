@@ -45,7 +45,7 @@ def runExperiment(map, top, results, showGUI=False):
         #dls
         gameStateDLS = GameState(map, (40, 40))
         gameStateDLS.setStartPoint(location)
-        dls = agents.dlsAgent(gameStateDLS, 100)
+        dls = agents.dlsAgent(gameStateDLS, 60)
 
 
 
@@ -77,4 +77,6 @@ def runExperiment(map, top, results, showGUI=False):
         else:
             results[type] = [result]
 
+    for type in results:
+        results[type].append(Result(0, "BREAK", 0))   #put break at the end of data
     return results
