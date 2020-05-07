@@ -29,6 +29,6 @@ pip install -r requirements.txt
 ## How to use
 
 The main entry point for the project is currently:
-`./src/main.py`
+`./main.py`
 
-It **must be run from the root directory** due to how Python handles references to to other directories in the workspace.
+It **must be run from the src directory** due to how Python handles references to to other directories in the workspace.
