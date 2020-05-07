@@ -42,7 +42,7 @@ class Game:
         score = -self.fuelUsed - (5*self.gameState.refils)
 
         if self.failed:
-            score = score - 1000
+            score = score - 10000
         #score = 1.0/(score + 1)
         return score
 
